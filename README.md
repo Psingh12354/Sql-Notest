@@ -116,6 +116,166 @@ Used to form conditions in SQL statements.
 - **Comparison**: =, !=, <, >, <=, >=  
 - **Logical**: AND, OR, NOT  
 - **IN** / **BETWEEN** / **LIKE**: Used for matching patterns and ranges
+## 🔘 IN Operator
+
+The `IN` operator is used to match **a value against a list of possible values**.
+
+### ✅ Syntax
+
+```sql
+SELECT column_name
+FROM table_name
+WHERE column_name IN (value1, value2, ...);
+```
+
+### 🧪 Example
+
+```sql
+SELECT name
+FROM employees
+WHERE dept_id IN (101, 102);
+```
+
+Returns employees in department 101 or 102.
+
+> ✅ Shortcut for multiple OR conditions:
+>
+> `WHERE dept_id = 101 OR dept_id = 102`
+
+---
+
+### 🔄 NOT IN
+
+Negates the check — matches values **not in the list**.
+
+```sql
+SELECT name
+FROM employees
+WHERE dept_id NOT IN (101, 102);
+```
+
+---
+
+## 📏 BETWEEN Operator
+
+The `BETWEEN` operator is used to check if a value lies within a **range (inclusive)**.
+
+### ✅ Syntax
+
+```sql
+SELECT column_name
+FROM table_name
+WHERE column_name BETWEEN value1 AND value2;
+```
+
+> `value1` should be the **lower bound** and `value2` the **upper bound**.
+
+---
+
+### 🧪 Example (Numbers)
+
+```sql
+SELECT name, salary
+FROM employees
+WHERE salary BETWEEN 30000 AND 50000;
+```
+
+Returns employees earning between 30k and 50k (inclusive).
+
+---
+
+### 🧪 Example (Dates)
+
+```sql
+SELECT *
+FROM orders
+WHERE order_date BETWEEN '2024-01-01' AND '2024-12-31';
+```
+
+> ✅ Useful for filtering date ranges
+
+---
+
+### 🔄 NOT BETWEEN
+
+```sql
+SELECT name
+FROM employees
+WHERE salary NOT BETWEEN 30000 AND 50000;
+```
+
+---
+
+## 🔤 LIKE Operator
+
+Used for **pattern matching** with **wildcards** in string values.
+
+### ✅ Syntax
+
+```sql
+SELECT column_name
+FROM table_name
+WHERE column_name LIKE 'pattern';
+```
+
+---
+
+### 🧪 Wildcards
+
+| Wildcard | Meaning                       |
+|----------|-------------------------------|
+| `%`      | Zero or more characters       |
+| `_`      | Exactly one character         |
+
+---
+
+### 🔍 Examples
+
+```sql
+-- Names starting with 'A'
+SELECT name FROM employees
+WHERE name LIKE 'A%';
+
+-- Names ending with 'n'
+SELECT name FROM employees
+WHERE name LIKE '%n';
+
+-- Names containing 'ar'
+SELECT name FROM employees
+WHERE name LIKE '%ar%';
+
+-- Names with 5 characters
+SELECT name FROM employees
+WHERE name LIKE '_____';
+
+-- Names starting with 'A' and 2nd letter is 'l'
+SELECT name FROM employees
+WHERE name LIKE 'Al%';
+```
+
+---
+
+### 🔄 NOT LIKE
+
+Negates the pattern:
+
+```sql
+SELECT name
+FROM employees
+WHERE name NOT LIKE 'A%';
+```
+
+---
+
+## 🆚 Comparison Summary
+
+| Operator  | Use Case                         | Example Syntax                          | Notes                                 |
+|-----------|----------------------------------|------------------------------------------|----------------------------------------|
+| `IN`      | Match one of multiple values     | `WHERE id IN (1, 2, 3)`                 | Clean replacement for multiple `OR`s  |
+| `BETWEEN` | Match a value in a range         | `WHERE age BETWEEN 20 AND 30`           | Inclusive of both endpoints            |
+| `LIKE`    | Match string patterns            | `WHERE name LIKE 'A%'`                  | Use `%` for wildcard matching          |
+
+---
 
 ```sql
 SELECT * FROM employees 
@@ -313,11 +473,11 @@ A **JOIN** clause is used to retrieve data from multiple tables based on a relat
 
 **Returns only the rows with matching values in both tables.**
 
-***sql
+```sql
 SELECT e.name AS employee, d.name AS department
 FROM employees e
 INNER JOIN departments d ON e.dept_id = d.id;
-***
+```
 
 **Result:**
 
@@ -332,11 +492,11 @@ INNER JOIN departments d ON e.dept_id = d.id;
 
 **Returns all rows from the left table, and matched rows from the right. NULLs if no match.**
 
-***sql
+```sql
 SELECT e.name AS employee, d.name AS department
 FROM employees e
 LEFT JOIN departments d ON e.dept_id = d.id;
-***
+```
 
 **Result:**
 
@@ -352,11 +512,11 @@ LEFT JOIN departments d ON e.dept_id = d.id;
 
 **Returns all rows from the right table, and matched rows from the left.**
 
-***sql
+```sql
 SELECT e.name AS employee, d.name AS department
 FROM employees e
 RIGHT JOIN departments d ON e.dept_id = d.id;
-***
+```
 
 **Result:**
 
@@ -372,11 +532,11 @@ RIGHT JOIN departments d ON e.dept_id = d.id;
 
 **Returns all records when there is a match in either table. NULLs for no matches.**
 
-***sql
+```sql
 SELECT e.name AS employee, d.name AS department
 FROM employees e
 FULL OUTER JOIN departments d ON e.dept_id = d.id;
-***
+```
 
 **Result:**
 
@@ -395,11 +555,11 @@ FULL OUTER JOIN departments d ON e.dept_id = d.id;
 
 **Returns the Cartesian product (all possible combinations) of both tables.**
 
-***sql
+```sql
 SELECT e.name AS employee, d.name AS department
 FROM employees e
 CROSS JOIN departments d;
-***
+```
 
 **Result:**  
 If 3 employees × 3 departments → 9 rows total.
@@ -410,11 +570,11 @@ If 3 employees × 3 departments → 9 rows total.
 
 **A table joined to itself. Often used to find hierarchical relationships (e.g., employee-manager).**
 
-***sql
+```sql
 SELECT e.name AS employee, m.name AS manager
 FROM employees e
 JOIN employees m ON e.manager_id = m.id;
-***
+```
 
 ---
 
@@ -438,11 +598,11 @@ Assuming these structures:
 
 Then:
 
-***sql
+```sql
 SELECT *
 FROM employees
 NATURAL JOIN departments;
-***
+```
 
 **Result:**
 
@@ -465,11 +625,11 @@ NATURAL JOIN departments;
 
 ### 🔁 Equivalent INNER JOIN:
 
-***sql
+```sql
 SELECT *
 FROM employees e
 JOIN departments d ON e.dept_id = d.dept_id;
-***
+```
 
 ---
 
