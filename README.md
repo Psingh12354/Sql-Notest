@@ -708,3 +708,85 @@ Let me know if you'd like:
 - Practice problems for JOINs
 
 
+---
+### Common Table Expression (CTE) — Notes
+
+**Definition:**
+A Common Table Expression (CTE) is a temporary named result set defined within a single SQL statement. It acts like a temporary table that exists only during the execution of that query.
+
+**Syntax:**
+
+```sql
+WITH cte_name AS (
+  SELECT ...
+)
+SELECT * FROM cte_name;
+```
+
+**Purpose:**
+
+- Break complex queries into simpler parts
+- Reuse intermediate result sets inside a query
+- Make queries easier to read and maintain
+- Support recursive queries (hierarchical data)
+
+**How it works:**
+
+- Define a named query with `WITH` and a subquery (`SELECT`) inside parentheses
+- Use the CTE name in the outer query as if it were a real table
+- The CTE is temporary and limited to the single query execution
+
+
+### Examples
+
+1. **Basic CTE to calculate average salary by department:**
+```sql
+WITH DeptAvg AS (
+  SELECT department_id, AVG(salary) AS avg_salary
+  FROM employees
+  GROUP BY department_id
+)
+SELECT *
+FROM DeptAvg;
+```
+
+2. **Use CTE in main query to find employees earning above their department average:**
+```sql
+WITH DeptAvg AS (
+  SELECT department_id, AVG(salary) AS avg_salary
+  FROM employees
+  GROUP BY department_id
+)
+SELECT e.*
+FROM employees e
+JOIN DeptAvg d ON e.department_id = d.department_id
+WHERE e.salary > d.avg_salary;
+```
+
+3. **Multiple CTEs in one query with a join:**
+```sql
+WITH Sales_CTE AS (
+  SELECT SalesPersonID, SUM(TotalDue) AS TotalSales
+  FROM SalesOrderHeader
+  GROUP BY SalesPersonID
+),
+Quota_CTE AS (
+  SELECT SalesPersonID, SUM(SalesQuota) AS TotalQuota
+  FROM SalesPersonQuota
+  GROUP BY SalesPersonID
+)
+SELECT s.SalesPersonID, s.TotalSales, q.TotalQuota
+FROM Sales_CTE s
+JOIN Quota_CTE q ON s.SalesPersonID = q.SalesPersonID;
+```
+
+
+### Summary
+
+- CTE = named temporary result set (like a temporary table) inside query
+- Write `WITH cte_name AS (SELECT ...)` before main query
+- Can simplify, modularize, and improve readability of SQL
+- Useful for recursive and hierarchical queries
+
+
+---
