@@ -790,3 +790,147 @@ JOIN Quota_CTE q ON s.SalesPersonID = q.SalesPersonID;
 
 
 ---
+
+### LEFT
+
+- **Purpose:** Extracts a specified number of characters from the beginning (left side) of a string.
+- **Syntax:**
+
+```sql
+LEFT(column_name, number_of_characters)
+```
+
+- **Example:**
+`LEFT('Delhi', 1)` returns `'D'`
+- **Use case:** To get the first character(s) of a string (e.g., to check the first letter in city names).
+
+***
+
+### RIGHT
+
+- **Purpose:** Extracts a specified number of characters from the end (right side) of a string.
+- **Syntax:**
+
+```sql
+RIGHT(column_name, number_of_characters)
+```
+
+- **Example:**
+`RIGHT('Delhi', 1)` returns `'i'`
+- **Use case:** To get the last character(s) of a string (e.g., to check the last letter in city names).
+
+***
+
+### SUBSTR (or SUBSTRING)
+
+- **Purpose:** Extracts a substring starting from a specific position for a given length.
+- **Syntax:**
+
+```sql
+SUBSTR(string, start_position, length)
+```
+
+or
+
+```sql
+SUBSTRING(string, start_position, length)
+```
+
+- **Details:**
+    - `start_position` is 1-based (starts counting at 1).
+    - `length` is how many characters to extract from `start_position`.
+- **Examples:**
+    - `SUBSTR('Delhi', 1, 1)` returns `'D'` (first character)
+    - `SUBSTR('Delhi', 5, 1)` returns `'i'` (last character)
+    - `SUBSTR('Delhi', 2, 3)` returns `'elh'` (characters starting from position 2, length 3)
+- **Use case:** More flexible than LEFT/RIGHT, allowing extraction from any position within the string.
+
+***
+
+### Summary
+
+- Use **LEFT** to get characters from the start.
+- Use **RIGHT** to get characters from the end.
+- Use **SUBSTR**/ **SUBSTRING** for extracting substrings from any position with flexible length.
+### FLOOR
+
+- **Purpose:**
+Returns the largest integer **less than or equal to** a given number. It always rounds **down**, truncating the decimal part.
+- **Syntax:**
+
+```sql
+FLOOR(number)
+```
+
+- **Example:**
+
+```sql
+FLOOR(4.9)  -- returns 4
+FLOOR(4.1)  -- returns 4
+FLOOR(-4.1) -- returns -5 (because -5 < -4.1)
+```
+
+- **Use case:**
+When you want to round down to the nearest integer, ensuring the result is never greater than the original number. Good for conservative calculations, like rounding down average populations so you don’t overstate counts.
+
+***
+
+### CEIL (or CEILING)
+
+- **Purpose:**
+Returns the smallest integer **greater than or equal to** the given number. It always rounds **up**, moving to the next integer if there is any decimal part.
+- **Syntax:**
+
+```sql
+CEIL(number)
+-- or sometimes CEILING(number)
+```
+
+- **Example:**
+
+```sql
+CEIL(4.1)   -- returns 5
+CEIL(4.9)   -- returns 5
+CEIL(-4.1)  -- returns -4 (because -4 is the smallest integer >= -4.1)
+```
+
+- **Use case:**
+When you want to round up to ensure the result is never less than the original number. Useful in scenarios where you must cover the full amount, like allocating resources.
+
+***
+
+### ROUND
+
+- **Purpose:**
+Rounds the number to the nearest integer or to a specified number of decimal places.
+- **Syntax:**
+
+```sql
+ROUND(number [, decimal_places])
+```
+
+- **Behavior:**
+    - If the decimal part is 0.5 or greater, rounds **up**.
+    - Otherwise, rounds **down**.
+- **Example:**
+
+```sql
+ROUND(4.5)   -- returns 5
+ROUND(4.4)   -- returns 4
+ROUND(-4.5)  -- returns -4 (depending on SQL dialect rounding rules)
+ROUND(4.567, 2) -- returns 4.57 (round to 2 decimal places)
+```
+
+- **Use case:**
+When you want the closest approximation rather than always rounding up or down. Common for general statistics or financial calculations.
+
+***
+
+### Summary Comparison
+
+| Function | Rounding Behavior | Example Input | Example Output |
+| :-- | :-- | :-- | :-- |
+| FLOOR | Always rounds **down** | 4.9 | 4 |
+| CEIL | Always rounds **up** | 4.1 | 5 |
+| ROUND | Rounds to **nearest integer/decimal** | 4.5 | 5 |
+--- 
