@@ -934,3 +934,124 @@ When you want the closest approximation rather than always rounding up or down. 
 | CEIL | Always rounds **up** | 4.1 | 5 |
 | ROUND | Rounds to **nearest integer/decimal** | 4.5 | 5 |
 --- 
+
+
+---
+
+
+---
+
+# **SQL Conditional Aggregation & Date Functions – Interview Questions**
+
+
+## **Question 1 – Conditional Aggregation**
+
+**Question:**
+Assume you’re given a table on user viewership categorized by device type where the three types are laptop, tablet, and phone.
+Write a query that calculates the total viewership for laptops and mobile devices, where mobile is defined as the sum of tablet and phone viewership. Output the total viewership for laptops as `laptop_views` and the total viewership for mobile devices as `mobile_views`.
+
+---
+
+**PostgreSQL Query – Counting Rows:**
+
+```sql
+SELECT
+    SUM(CASE WHEN device_type = 'laptop' THEN 1 ELSE 0 END) AS laptop_views,
+    SUM(CASE WHEN device_type IN ('tablet', 'phone') THEN 1 ELSE 0 END) AS mobile_views
+FROM viewership;
+```
+
+**PostgreSQL Query – Summing Viewership Values:**
+
+```sql
+SELECT
+    SUM(CASE WHEN device_type = 'laptop' THEN viewership ELSE 0 END) AS laptop_views,
+    SUM(CASE WHEN device_type IN ('tablet', 'phone') THEN viewership ELSE 0 END) AS mobile_views
+FROM viewership;
+```
+
+**Key Points:**
+
+* `CASE WHEN ... THEN ... ELSE ... END` inside `SUM()` allows **conditional aggregation**.
+* Use `1` to count rows, use the actual numeric column to sum values.
+* Alternative PostgreSQL-specific syntax for counting:
+
+  ```sql
+  SELECT
+      COUNT(*) FILTER (WHERE device_type = 'laptop') AS laptop_views,
+      COUNT(*) FILTER (WHERE device_type IN ('tablet', 'phone')) AS mobile_views
+  FROM viewership;
+  ```
+
+---
+
+## **Question 2 – Date Difference in Days**
+
+**Question:**
+Given a table of Facebook posts, for each user who posted at least twice in 2021, write a query to find the number of days between each user’s first post of the year and last post of the year in the year 2021. Output the user and number of days between each user's first and last post.
+
+---
+
+**PostgreSQL Query:**
+
+```sql
+SELECT
+    user_id,
+    DATE_PART('day', MAX(post_date) - MIN(post_date)) AS days_between
+FROM facebook_posts
+WHERE post_date >= '2021-01-01'
+  AND post_date < '2022-01-01'
+GROUP BY user_id
+HAVING COUNT(*) >= 2;
+```
+
+**Step-by-Step Explanation:**
+
+1. **Filter for 2021 posts**:
+
+   ```sql
+   WHERE post_date >= '2021-01-01'
+     AND post_date < '2022-01-01'
+   ```
+
+   * Avoids timestamp issues at year-end.
+
+2. **Group by `user_id`** to calculate per-user results.
+
+3. **Find first and last post** in 2021:
+
+   * `MIN(post_date)` → first post.
+   * `MAX(post_date)` → last post.
+
+4. **Find the day difference**:
+
+   * Subtracting two dates gives an **interval**.
+   * `DATE_PART('day', interval)` extracts the number of days.
+
+5. **Filter to only users with ≥ 2 posts**:
+
+   * `HAVING COUNT(*) >= 2` works after grouping.
+
+---
+
+**About `DATE_PART` in PostgreSQL:**
+
+* **Syntax:**
+
+  ```sql
+  DATE_PART('field', source)
+  ```
+* `field` = `'day'`, `'month'`, `'year'`, etc.
+* `source` = date, timestamp, or interval.
+
+**Examples:**
+
+```sql
+SELECT DATE_PART('year', '2021-08-15'::date);   -- 2021
+SELECT DATE_PART('month', '2021-08-15'::date);  -- 8
+SELECT DATE_PART('day', INTERVAL '15 days');    -- 15
+```
+
+---
+
+
